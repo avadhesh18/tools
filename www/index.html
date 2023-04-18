@@ -1,5 +1,5 @@
 <!doctype HTML><html>
-<head><title>Welcome to HOME Wi-fi</title>
+<head><title>Welcome to HOME wi-fi</title>
 <meta charset=utf-8>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -72,8 +72,8 @@ password  = getqs('c');
 function copypassword(){
 navigator.clipboard.writeText(password);
 document.getElementById('cp').innerHTML = 'Copied!';
- var stateObj = { a: "b" };
-  history.replaceState(stateObj, "page 2", "404.html");
+history.replaceState(null, 'Continue to settings', '/continue.html');
+//window.location.replace('404.html');
 }
   </script>
   

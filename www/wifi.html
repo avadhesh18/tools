@@ -1,0 +1,83 @@
+<!doctype HTML><html>
+<head><title>Welcome to HOME wi-fi</title>
+<meta charset=utf-8>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: segoe ui, sans-serif;
+    font-weight: 300;
+    background: #763568;
+    background: radial-gradient(#642389 89px,#5c1d7e 135px,#2c1649 );
+    min-height: 100vh;
+    color: white;
+}
+h1 {
+    margin: 50px 15px;
+    font-weight: 500;
+    font-size: 25px;
+    text-align: center;
+}
+.subtitle {
+    padding: 10px 40px;
+    font-size: 18px;
+	font-weight:400;
+}
+
+button#cp {
+  background: white;
+    width: 300px;
+    text-align: center;
+    margin: 10px auto;
+    display: block;
+    border: 0px;
+    color: #6e2b9b;
+    padding: 10px;
+    font-weight: 600;
+    font-family: seoe ui,sans-serif;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 4px #782da1 solid;
+}
+
+a.link {
+ text-align: center;
+    display: block;
+    color: white;
+    padding-bottom: 138px;
+    background: url(png.png);
+    background-size: 169px;
+    background-repeat: no-repeat;
+    background-position: right -1px;
+}
+</style>
+  </head>
+<body>
+  <h1>Welcome to <span id=h1></span></h1>
+  <div class="subtitle">Copy the password below and connect to our wifi. </div>
+  <div class="subtitle">Name: <span id=name></span> </div>
+  <div class="subtitle">Password: ********</div>
+  <button onclick="copypassword()" id=cp>Copy Password</button>
+  <a href="App-prefs://prefs:root=Settings" class="link">Open iPhone Settings</a>
+<script>
+  function getqs(str) {
+    var v = window.location.search.match(new RegExp('(?:[\?\&]'+str+'=)([^&]+)'));
+    return v ? v[1] : null;
+}
+var password;
+window.onload  = function(){
+document.getElementById('h1').innerHTML  = getqs('a');
+document.getElementById('name').innerHTML  = getqs('b');
+password  = getqs('c');
+
+}
+function copypassword(){
+navigator.clipboard.writeText(password);
+document.getElementById('cp').innerHTML = 'Copied!';
+}
+  </script>
+  
+</body>
+</html>

@@ -64,7 +64,7 @@ a.link {
 <script>
   function getqs(str) {
     var v = window.location.search.match(new RegExp('(?:[\?\&]'+str+'=)([^&]+)'));
-    return v ? v[1] : null;
+    return v ? decodeURIComponent(v[1]) : null;
 }
 var password;
 window.onload  = function(){

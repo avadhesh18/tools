@@ -72,8 +72,7 @@ password  = getqs('c');
 function copypassword(){
 navigator.clipboard.writeText(password);
 document.getElementById('cp').innerHTML = 'Copied!';
-history.replaceState(null, 'Continue to settings', '/continue.html');
-//window.location.replace('404.html');
+window.location.replace('continue.html');
 }
   </script>
   

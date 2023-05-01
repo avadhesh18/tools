@@ -1,0 +1,158 @@
+
+<!DOCTYPE html><html><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<title>Online Encryption and Decryption: Libsodium Encryption Tool</title>
+<script src="sodium.js" ></script>
+<style>
+body {
+    font-family: segoe ui,sans-serif;
+    margin: 0;
+    background: #f0f0f0;
+}
+
+.header {
+    color: black;
+}
+
+.header h1 {
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 22px;
+    text-align: center;
+    background: #dcdcdc;
+    color: black;
+}
+
+.wrap {
+    padding: 15px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.label {
+    padding: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    padding-bottom: 0px;
+}
+
+textarea#a1 {
+    width: 90%;
+    height: 100px;
+    font-family: monospace;
+    padding: 10px;
+    margin: 10px;
+    box-sizing: border-box;
+}
+
+input#i1 {
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+    font-family: monospace;
+    box-sizing: border-box;
+}
+
+button#encb,button#decb {
+    background: #2251ff;
+    color: white;
+    display: inline-block;
+    margin: 10px;
+    font-size: 17px;
+    width: 90%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    width: 44%;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+button#encb:hover, button#decb:hover {
+
+    background:#1f40bc;
+}
+div#result {
+    white-space: pre-wrap;
+    background: gainsboro;
+    word-break: break-all;
+    width: 90%;
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+</style>
+</head><body><div class="header">
+<h1>Encrypt and Decrypt Online Tool</h1>
+</div>
+<div class="wrap">
+<div class="form">
+<div class="label">Enter text to encrypt or decrypt</div>
+<textarea  id=a1></textarea>
+<div class="label">Enter a password</div>
+<input type="password" id="i1">
+<button onclick="encthis()" id="encb">Encrypt</button>
+<button onclick="decthis()" id="decb">Decrpt</button>
+</div>
+<div id=result></div>
+</div>
+<script>
+
+//const key = '6de550be1ea85eec994e64a381a44582740967bf9c83e7105f9611923d99bb86'
+var salt  = '';
+function inp(x){
+show('<div class="loading">Loading...</div>');
+if(x == 'new') {
+
+  salt  = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES,'hex');
+ }
+ else {
+ salt = x;
+ }
+//console.log(salt);
+console.log('___');
+let password = document.getElementById('i1').value;
+try{
+let hashed =     sodium.crypto_pwhash(32,password, sodium.from_hex(salt), 2, 65536 << 10, 2,'hex')
+return  hashed;
+}
+catch(er) {show('ERROR:'+er+' <br/>Looks like the text wasn\'t encrypted with this tool!');
+return false;
+} 
+
+}
+
+function encthis(){
+let key  = inp('new');
+let nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES,'hex');
+text  = document.getElementById('a1').value;
+let cipherText = sodium.crypto_secretbox_easy(text,
+  sodium.from_hex(nonce), sodium.from_hex(key), 'hex');
+
+  
+show(salt+nonce+cipherText);
+}
+function decthis(){
+ctext = document.getElementById('a1').value;
+let csalt  =  ctext.substr(0, sodium.crypto_pwhash_SALTBYTES*2);
+let nonce  =  ctext.substr(sodium.crypto_pwhash_SALTBYTES*2, sodium.crypto_secretbox_NONCEBYTES*2);
+
+ ctext = ctext.substr(sodium.crypto_pwhash_SALTBYTES*2+sodium.crypto_secretbox_NONCEBYTES*2);
+ let key  = inp(csalt);
+ try{
+let decrypted = sodium.crypto_secretbox_open_easy(sodium.from_hex(ctext),
+  sodium.from_hex(nonce), sodium.from_hex(key), 'text');
+    show(decrypted);
+  }
+  catch(err) {
+  show('ERROR: '+ err);
+  }
+  
+
+
+  }
+  function show(t) {
+document.getElementById('result').innerHTML = t;
+}
+</script>
+</body></html>

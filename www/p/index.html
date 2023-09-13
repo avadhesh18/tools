@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PeerJS Chat</title>
+    <title>WebRTC Chat</title>
 </head>
 <body>
-    <h1>PeerJS Chat</h1>
+    <h1>WebRTC Chat</h1>
     <div>
         <h2>Your ID:</h2>
         <p id="your-id"></p>
@@ -22,33 +22,47 @@
         <button id="send">Send</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.6.0/peer.min.js"></script>
     <script>
-        // Initialize PeerJS with your API key (replace 'YOUR_API_KEY' with your actual API key)
-        const apiKey = 'YOUR_API_KEY'; // Replace with your actual PeerJS API key
-        const peer = new Peer({ key: apiKey });
+        // Generate a random peer ID for this device
+        const yourPeerId = Math.random().toString(36).substring(7);
+        document.getElementById('your-id').textContent = yourPeerId;
 
-        peer.on('open', (id) => {
-            document.getElementById('your-id').textContent = id;
-        });
+        const peers = {}; // To store connected peers
 
-        // Listen for incoming data connections
-        peer.on('connection', (conn) => {
-            conn.on('data', (data) => {
-                appendMessage(data, 'incoming');
-            });
-        });
+        const peerConnectionConfig = {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }], // STUN server for NAT traversal
+        };
+
+        // Initialize the WebRTC connection
+        const peerConnection = new RTCPeerConnection(peerConnectionConfig);
+
+        // Add a data channel for chat messages
+        const dataChannel = peerConnection.createDataChannel('chat');
+
+        dataChannel.onopen = () => {
+            console.log('Data channel is open.');
+        };
+
+        dataChannel.onmessage = (event) => {
+            appendMessage(event.data, 'incoming');
+        };
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                // Send ICE candidate information to the peer
+                // In a real application, you would use a signaling server for this
+            }
+        };
 
         // Send a message to a peer
         document.getElementById('send').addEventListener('click', () => {
             const peerId = document.getElementById('peer-id').value;
             const message = document.getElementById('message').value;
-            const conn = peer.connect(peerId);
 
-            conn.on('open', () => {
-                conn.send(message);
-                appendMessage(message, 'outgoing');
-            });
+            // Send the message via the data channel to the selected peer
+            dataChannel.send(message);
+
+            appendMessage(message, 'outgoing');
         });
 
         // Display messages in the chat area

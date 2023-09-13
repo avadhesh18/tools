@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerJS Chat</title>
+</head>
+<body>
+    <h1>PeerJS Chat</h1>
+    <div>
+        <h2>Your ID:</h2>
+        <p id="your-id"></p>
+    </div>
+    <div>
+        <h2>Peer ID:</h2>
+        <input type="text" id="peer-id">
+    </div>
+    <div>
+        <h2>Chat:</h2>
+        <div id="chat"></div>
+        <input type="text" id="message" placeholder="Type a message...">
+        <button id="send">Send</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.6.0/peer.min.js"></script>
+    <script>
+        // Initialize PeerJS with your API key (replace 'YOUR_API_KEY' with your actual API key)
+        const apiKey = 'YOUR_API_KEY'; // Replace with your actual PeerJS API key
+        const peer = new Peer({ key: apiKey });
+
+        peer.on('open', (id) => {
+            document.getElementById('your-id').textContent = id;
+        });
+
+        // Listen for incoming data connections
+        peer.on('connection', (conn) => {
+            conn.on('data', (data) => {
+                appendMessage(data, 'incoming');
+            });
+        });
+
+        // Send a message to a peer
+        document.getElementById('send').addEventListener('click', () => {
+            const peerId = document.getElementById('peer-id').value;
+            const message = document.getElementById('message').value;
+            const conn = peer.connect(peerId);
+
+            conn.on('open', () => {
+                conn.send(message);
+                appendMessage(message, 'outgoing');
+            });
+        });
+
+        // Display messages in the chat area
+        function appendMessage(message, type) {
+            const chat = document.getElementById('chat');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(type);
+            messageElement.textContent = message;
+            chat.appendChild(messageElement);
+        }
+    </script>
+</body>
+</html>
